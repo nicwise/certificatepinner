@@ -8,6 +8,22 @@ Certificate Pinning can be quite difficult if you are not using [AlamoFire](http
 
 Hence this library. Oh how much time it would have saved us (me) if someone else had done this.
 
+# A note about what to pin to
+
+Have a look at the GitHub certificate information - click on the lock. You should see _three_ (or more) levels of certificates.
+
+* github.com - this is "their" certificate, or the leaf certificate
+* DigiCert SHA2 Extended Validation Server CA - this is the leaf node of the Certificate Authority
+* DigiCert High Assurance EV Root CA - this is the root certificate, which also lives inside your browsers trusted certificate list
+
+You can pin to any of these, but I recommend the following:
+
+* If you have an app which is updated often, and you can expect your users to update quickly, you can consider pinning to your leaf (github.com). This expires after 24 months, usually, so you'll be maintaining a short list of hashs
+* If you have an app which isn't updated often, or you know your users may stick on an old version for a while, consider pinning to the leaf node of your CA (DigiCert SHA2 Extended Validation Server CA). This is almost as secure as your leaf node, especially if you have an EV or other hard-to-get certificate - or your own self-signed certificate chain
+* There is no reason to pin to the root, ever. Way too easy to get these.
+
+We choose to pin to the CA leaf node, after conversations with our penitration testers and security people. Highest security for least risk. Note that pinning doesn't _stop_ someone from MITM proxying your app if they have access to the device, but it does stop it if they don't. Don't trust this to super secret secrets - it's just one tool amongst many.
+
 # Usage
 
 To use this, have a look in `CertificatePinningTest/ViewController.swift`. The crux of it is:
