@@ -157,8 +157,6 @@ class CertificatePinner {
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L274
         var res : [String] = []
 
-        var publicKeys: [SecKey] = []
-
         for index in 0..<SecTrustGetCertificateCount(trust) {
             if let
                 certificate = SecTrustGetCertificateAtIndex(trust, index),
