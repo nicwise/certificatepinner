@@ -10,7 +10,7 @@
 import UIKit
 
 
-class ViewController: UIViewController, NSURLConnectionDelegate, NSURLConnectionDataDelegate, NSURLSessionDelegate {
+class ViewController: UIViewController {
 
 
     override func viewDidLoad() {
@@ -44,6 +44,37 @@ class ViewController: UIViewController, NSURLConnectionDelegate, NSURLConnection
 
     }
 
+
+
+    //------------ NSURLSesssion variant
+
+    @IBAction func nsUrlSessionTapped(sender: UIButton) {
+        let url = NSURL(string: "https://www.google.co.nz")
+
+        let session = NSURLSession(
+        configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration(),
+                delegate: self,
+                delegateQueue: nil)
+
+
+        let task = session.dataTaskWithURL(url!) {
+            (data, response, error) in
+            if error != nil {
+                print("error....")
+            } else {
+                print("done")
+            }
+        }
+
+        task.resume()
+
+    }
+
+
+
+}
+
+extension ViewController : NSURLConnectionDelegate {
     func connection(connection: NSURLConnection, willSendRequestForAuthenticationChallenge challenge: NSURLAuthenticationChallenge) {
         print("being challanged! for \(challenge.protectionSpace.host)")
 
@@ -72,35 +103,15 @@ class ViewController: UIViewController, NSURLConnectionDelegate, NSURLConnection
         }
 
     }
+}
 
+extension ViewController : NSURLConnectionDataDelegate {
     func connectionDidFinishLoading(connection: NSURLConnection) {
         print("all done")
     }
+}
 
-    //------------ NSURLSesssion variant
-
-    @IBAction func nsUrlSessionTapped(sender: UIButton) {
-        let url = NSURL(string: "https://www.google.co.nz")
-
-        let session = NSURLSession(
-        configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration(),
-                delegate: self,
-                delegateQueue: nil)
-
-
-        let task = session.dataTaskWithURL(url!) {
-            (data, response, error) in
-            if error != nil {
-                print("error....")
-            } else {
-                print("done")
-            }
-        }
-
-        task.resume()
-
-    }
-
+extension ViewController : NSURLSessionDelegate {
     @available(iOS 7.0, *) func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
         print("being challanged! for \(challenge.protectionSpace.host)")
 
@@ -128,5 +139,4 @@ class ViewController: UIViewController, NSURLConnectionDelegate, NSURLConnection
             completionHandler(.CancelAuthenticationChallenge, nil)
         }
     }
-
 }
