@@ -31,7 +31,7 @@ class CertificatePinner {
         The base URL to check against when validateCertificateTrustChain is called.
 
     */
-    public var expectedBaseUrl : String?
+    open var expectedBaseUrl : String?
 
 
     /**
@@ -40,10 +40,10 @@ class CertificatePinner {
         so you have something to pin to
 
     */
-    public var debugMode: Bool = false
+    open var debugMode: Bool = false
 
 
-    private var localHashList : [String] = []
+    fileprivate var localHashList : [String] = []
 
 
     init() {
@@ -63,7 +63,7 @@ class CertificatePinner {
         Use debugMode to find the hashes
 
     */
-    public func addCertificateHash(hash : String) {
+    open func addCertificateHash(_ hash : String) {
         localHashList.append(hash)
     }
 
@@ -77,11 +77,11 @@ class CertificatePinner {
         - Returns: true if the chain is valid.
 
     */
-    public func validateCertificateTrustChain(trust: SecTrust) -> Bool {
+    open func validateCertificateTrustChain(_ trust: SecTrust) -> Bool {
 
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L208
 
-        guard let baseUrl = expectedBaseUrl where expectedBaseUrl != "" else {
+        guard let baseUrl = expectedBaseUrl, expectedBaseUrl != "" else {
             return false
         }
 
@@ -90,10 +90,10 @@ class CertificatePinner {
         SecTrustSetPolicies(trust, policy)
 
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L238
-        var result = SecTrustResultType(kSecTrustResultInvalid)
+        var result = SecTrustResultType.invalid
 
         if SecTrustEvaluate(trust, &result) == errSecSuccess {
-            return (result == SecTrustResultType(kSecTrustResultUnspecified) || result == SecTrustResultType(kSecTrustResultProceed))
+            return (result == SecTrustResultType.unspecified || result == SecTrustResultType.proceed)
         }
 
         return false
@@ -114,7 +114,7 @@ class CertificatePinner {
         certificate, well before the new one is put onto the server.
 
     */
-    public func validateTrustPublicKeys(trust: SecTrust) -> Bool {
+    open func validateTrustPublicKeys(_ trust: SecTrust) -> Bool {
 
 
         let trustPublicKeys = getPublicKeysFromTrust(trust)
@@ -152,7 +152,7 @@ class CertificatePinner {
     /**
         Get the public keys from a trust. loop over each certificate, get the public key out and hash it
     */
-    private func getPublicKeysFromTrust(trust: SecTrust) -> [String] {
+    fileprivate func getPublicKeysFromTrust(_ trust: SecTrust) -> [String] {
 
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L274
         var res : [String] = []
@@ -160,7 +160,7 @@ class CertificatePinner {
         for index in 0..<SecTrustGetCertificateCount(trust) {
             if let
                 certificate = SecTrustGetCertificateAtIndex(trust, index),
-                publicKey = publicKeyForCertificate(certificate)
+                let publicKey = publicKeyForCertificate(certificate)
             {
                 let publicKeyHash = publicKeyRefToHash(publicKey)
                 res.append(publicKeyHash)
@@ -173,7 +173,7 @@ class CertificatePinner {
     /**
         Get a single public key (reference) from a given certificate
     */
-    private func publicKeyForCertificate(certificate: SecCertificate) -> SecKey? {
+    fileprivate func publicKeyForCertificate(_ certificate: SecCertificate) -> SecKey? {
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L289
         var publicKey: SecKey?
 
@@ -181,7 +181,7 @@ class CertificatePinner {
         var trust: SecTrust?
         let trustCreationStatus = SecTrustCreateWithCertificates(certificate, policy, &trust)
 
-        if let trust = trust where trustCreationStatus == errSecSuccess {
+        if let trust = trust, trustCreationStatus == errSecSuccess {
             publicKey = SecTrustCopyPublicKey(trust)
         }
 
@@ -192,15 +192,15 @@ class CertificatePinner {
         Convert a public key ref to a hash - this requires loading it into the keychain, then getting a reference to it
         as a NSData, then hashing the content of that.
     */
-    private func publicKeyRefToHash(publicKeyRef: SecKeyRef) -> String {
+    fileprivate func publicKeyRefToHash(_ publicKeyRef: SecKey) -> String {
 
         if let keyData = publicKeyRefToData(publicKeyRef) {
 
-            var hash = [UInt8](count: Int(CC_SHA256_DIGEST_LENGTH), repeatedValue: 0)
-            CC_SHA256(keyData.bytes, CC_LONG(keyData.length), &hash)
-            let res = NSData(bytes: hash, length: Int(CC_SHA256_DIGEST_LENGTH))
+            var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+            CC_SHA256((keyData as NSData).bytes, CC_LONG(keyData.count), &hash)
+            let res = Data(bytes: UnsafePointer<UInt8>(hash), count: Int(CC_SHA256_DIGEST_LENGTH))
 
-            return res.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.init(rawValue: 0))
+            return res.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0))
         }
 
         return ""
@@ -212,35 +212,35 @@ class CertificatePinner {
 
         Only way to do this is to load the key into the Keychain, then read it back.
     */
-    private func publicKeyRefToData(publicKeyRef: SecKeyRef) -> NSData? {
+    fileprivate func publicKeyRefToData(_ publicKeyRef: SecKey) -> Data? {
         let keychainTag = "X509_KEY"
         var publicKeyData : AnyObject?
         var putResult : OSStatus = noErr
         var delResult : OSStatus = noErr
 
         let putKeyParams : NSMutableDictionary = [
-            kSecClass as! String : kSecClassKey,
-            kSecAttrApplicationTag as! String : keychainTag,
-            kSecValueRef as! String : publicKeyRef,
-            kSecReturnData as! String : kCFBooleanTrue
+            kSecClass as String : kSecClassKey,
+            kSecAttrApplicationTag as String : keychainTag,
+            kSecValueRef as String : publicKeyRef,
+            kSecReturnData as String : kCFBooleanTrue
         ]
 
         let delKeyParams : NSMutableDictionary = [
-            kSecClass as! String : kSecClassKey,
-            kSecAttrApplicationTag as! String : keychainTag,
-            kSecReturnData as! String : kCFBooleanTrue
+            kSecClass as String : kSecClassKey,
+            kSecAttrApplicationTag as String : keychainTag,
+            kSecReturnData as String : kCFBooleanTrue
         ]
 
         //SecItemAdd takes an UnsafeMutablePointer<AnyObject?>, which means "pointer to AnyObject?"
         // took me bloody ages to work this one out :( but the & maps to UnsafeMutablePointer<T>
-        putResult = SecItemAdd(putKeyParams as! CFDictionary, &publicKeyData)
-        delResult = SecItemDelete(delKeyParams as! CFDictionary)
+        putResult = SecItemAdd(putKeyParams as CFDictionary, &publicKeyData)
+        delResult = SecItemDelete(delKeyParams as CFDictionary)
 
         if putResult != errSecSuccess || delResult != errSecSuccess {
             return nil
         }
 
-        return publicKeyData as? NSData
+        return publicKeyData as? Data
     }
 
 

@@ -98,6 +98,11 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				ORGANIZATIONNAME = None;
+				TargetAttributes = {
+					1AA089C16247BA8A98A80D67 = {
+						LastSwiftMigration = 0820;
+					};
+				};
 			};
 			buildConfigurationList = 1AA081859351420AEF8B0B77 /* Build configuration list for PBXProject "CertificatePinningTest" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -172,6 +177,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bigted.CertificatePinningTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/CertificatePinningTest/CertificatePinner_swiftBridge.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -184,6 +190,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bigted.CertificatePinningTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/CertificatePinningTest/CertificatePinner_swiftBridge.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

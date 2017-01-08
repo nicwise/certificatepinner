@@ -36,11 +36,11 @@ class ViewController: UIViewController {
 
 
     //------ NSURLConnection variant (deprecated, but used a lot)
-    @IBAction func nsUrlConnectionTapped(sender: UIButton) {
+    @IBAction func nsUrlConnectionTapped(_ sender: UIButton) {
 
-        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.google.co.nz")!)
+        let request = NSMutableURLRequest(url: URL(string: "https://www.google.co.nz")!)
 
-        let conn = NSURLConnection(request: request, delegate: self, startImmediately: true)
+        let conn = NSURLConnection(request: request as URLRequest, delegate: self, startImmediately: true)
 
     }
 
@@ -48,23 +48,23 @@ class ViewController: UIViewController {
 
     //------------ NSURLSesssion variant
 
-    @IBAction func nsUrlSessionTapped(sender: UIButton) {
-        let url = NSURL(string: "https://www.google.co.nz")
+    @IBAction func nsUrlSessionTapped(_ sender: UIButton) {
+        let url = URL(string: "https://www.google.co.nz")
 
-        let session = NSURLSession(
-        configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration(),
+        let session = Foundation.URLSession(
+        configuration: URLSessionConfiguration.ephemeral,
                 delegate: self,
                 delegateQueue: nil)
 
 
-        let task = session.dataTaskWithURL(url!) {
+        let task = session.dataTask(with: url!, completionHandler: {
             (data, response, error) in
             if error != nil {
                 print("error....")
             } else {
                 print("done")
             }
-        }
+        }) 
 
         task.resume()
 
@@ -75,68 +75,68 @@ class ViewController: UIViewController {
 }
 
 extension ViewController : NSURLConnectionDelegate {
-    func connection(connection: NSURLConnection, willSendRequestForAuthenticationChallenge challenge: NSURLAuthenticationChallenge) {
+    func connection(_ connection: NSURLConnection, willSendRequestFor challenge: URLAuthenticationChallenge) {
         print("being challanged! for \(challenge.protectionSpace.host)")
 
         guard let trust = challenge.protectionSpace.serverTrust else {
             print("invalid trust!")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
+            challenge.sender?.cancel(challenge)
             return
         }
 
 
 
-        let credential = NSURLCredential(trust: trust)
+        let credential = URLCredential(trust: trust)
 
         let pinner = setupCertificatePinner()
 
         if (!pinner.validateCertificateTrustChain(trust)) {
             print("failed: invalid certificate chain!")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
+            challenge.sender?.cancel(challenge)
         }
 
         if (pinner.validateTrustPublicKeys(trust)) {
-            challenge.sender?.useCredential(credential, forAuthenticationChallenge: challenge)
+            challenge.sender?.use(credential, for: challenge)
         } else {
             print ("couldn't validate trust for \(challenge.protectionSpace.host)")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
+            challenge.sender?.cancel(challenge)
         }
 
     }
 }
 
 extension ViewController : NSURLConnectionDataDelegate {
-    func connectionDidFinishLoading(connection: NSURLConnection) {
+    func connectionDidFinishLoading(_ connection: NSURLConnection) {
         print("all done")
     }
 }
 
-extension ViewController : NSURLSessionDelegate {
-    @available(iOS 7.0, *) func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
+extension ViewController : URLSessionDelegate {
+    @available(iOS 7.0, *) func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         print("being challanged! for \(challenge.protectionSpace.host)")
 
         guard let trust = challenge.protectionSpace.serverTrust else {
             print("invalid trust!")
-            completionHandler(.CancelAuthenticationChallenge, nil)
+            completionHandler(.cancelAuthenticationChallenge, nil)
             return
         }
 
 
-        let credential = NSURLCredential(trust: trust)
+        let credential = URLCredential(trust: trust)
 
         let pinner = setupCertificatePinner()
 
         if (!pinner.validateCertificateTrustChain(trust)) {
             print("failed: invalid certificate chain!")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
+            challenge.sender?.cancel(challenge)
         }
 
         if (pinner.validateTrustPublicKeys(trust)) {
-            completionHandler(.UseCredential, credential)
+            completionHandler(.useCredential, credential)
 
         } else {
             print("couldn't validate trust for \(challenge.protectionSpace.host)")
-            completionHandler(.CancelAuthenticationChallenge, nil)
+            completionHandler(.cancelAuthenticationChallenge, nil)
         }
     }
 }
