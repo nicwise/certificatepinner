@@ -13,7 +13,6 @@
 		1AA085AC1F6DCB58E148D455 /* CertificatePinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA086FD50B456A773CB0655 /* CertificatePinner.swift */; };
 		1AA0875D3CD7CBDE9237ED76 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AA0836BD32E37949482A37B /* Main.storyboard */; };
 		1AA0894313527E33336B161D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA086524429E8CCC7BBF2AA /* ViewController.swift */; };
-		1AA08A3B0EDAEADBCE347A6F /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AA08E92958B40958314587F /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -97,6 +96,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = None;
 				TargetAttributes = {
 					1AA089C16247BA8A98A80D67 = {
@@ -126,7 +126,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1AA08A3B0EDAEADBCE347A6F /* Info.plist in Resources */,
 				1AA0858A0E88237F2D023ED6 /* Assets.xcassets in Resources */,
 				1AA08439AA67FA53500386CE /* LaunchScreen.storyboard in Resources */,
 				1AA0875D3CD7CBDE9237ED76 /* Main.storyboard in Resources */,
@@ -207,8 +206,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -227,6 +228,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -245,8 +247,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

@@ -25,10 +25,24 @@ class ViewController: UIViewController {
     }
 
     func setupCertificatePinner() -> CertificatePinner {
-        var pinner = CertificatePinner("www.google.co.nz")
+        let pinner = CertificatePinner("www.google.co.nz")
 
+        /*
+         
+         You will see something like this:
+         
+         being challanged! for www.google.co.nz
+         hash order is usually most specific to least, so the first one is your domain, the last is the root CA
+         hash: 6lCuMOo4xA7OduSd1BaOiw314ZX6p9q/HhnAYeKcQJM=
+         hash: Jdw/MAPXx4bGGaRs+XZiR91WQOt39WrAYvJdkI0xVG8=
+         hash: RbpC/rJ2mpVj+lHMJ90Ulu/Q5MXRlomAMxeMyHWPUMo=
+         
+         you might need to change the has below to be the second one in the list for the code to pass
+         
+         */
+        
         pinner.debugMode = true
-        pinner.addCertificateHash("+abCS2zjVyISeEE90Fq1eC1ihAtQoh6q3mMUjlLGXfw=")
+        pinner.addCertificateHash("Jdw/MAPXx4bGGaRs+XZiR91WQOt39WrAYvJdkI0xVG8=")
 
         return pinner
     }
@@ -40,7 +54,7 @@ class ViewController: UIViewController {
 
         let request = NSMutableURLRequest(url: URL(string: "https://www.google.co.nz")!)
 
-        let conn = NSURLConnection(request: request as URLRequest, delegate: self, startImmediately: true)
+        _ = NSURLConnection(request: request as URLRequest, delegate: self, startImmediately: true)
 
     }
 
