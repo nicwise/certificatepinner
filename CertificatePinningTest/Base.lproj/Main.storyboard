@@ -1,8 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -14,29 +18,38 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E4t-re-mIY">
-                                <rect key="frame" x="220.5" y="245" width="159" height="30"/>
+                                <rect key="frame" x="108" y="278.5" width="159" height="30"/>
                                 <state key="normal" title="Use NSURLConnection"/>
                                 <connections>
                                     <action selector="nsUrlConnectionTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nQf-sx-Azs"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F9Z-Dl-hhc">
-                                <rect key="frame" x="233" y="295" width="134" height="30"/>
+                                <rect key="frame" x="120.5" y="328.5" width="134" height="30"/>
                                 <state key="normal" title="Use NSURLSession"/>
                                 <connections>
                                     <action selector="nsUrlSessionTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iwi-xW-2fe"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l4V-Ec-SyL">
+                                <rect key="frame" x="117" y="378.5" width="140" height="30"/>
+                                <state key="normal" title="Get Hash of DER file"/>
+                                <connections>
+                                    <action selector="getHashOfCertificateFile:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uWh-Kb-29F"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="F9Z-Dl-hhc" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="5xY-p0-7k2"/>
                             <constraint firstItem="E4t-re-mIY" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="88r-bP-yEw"/>
                             <constraint firstItem="E4t-re-mIY" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-40" id="Flh-h2-kCh"/>
+                            <constraint firstItem="l4V-Ec-SyL" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="H4H-Wg-I6g"/>
+                            <constraint firstItem="l4V-Ec-SyL" firstAttribute="top" secondItem="F9Z-Dl-hhc" secondAttribute="bottom" constant="20" id="JXs-zu-hJS"/>
                             <constraint firstItem="F9Z-Dl-hhc" firstAttribute="top" secondItem="E4t-re-mIY" secondAttribute="bottom" constant="20" id="qBL-E2-bVC"/>
                         </constraints>
                     </view>

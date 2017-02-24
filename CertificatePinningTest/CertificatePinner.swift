@@ -73,16 +73,33 @@ class CertificatePinner {
         }
 
         let policy = SecPolicyCreateSSL(true, baseUrl as CFString)
-
         SecTrustSetPolicies(trust, policy)
 
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L238
         var result = SecTrustResultType.invalid
-
         if SecTrustEvaluate(trust, &result) == errSecSuccess {
             return (result == SecTrustResultType.unspecified || result == SecTrustResultType.proceed)
         }
         return false
+    }
+    
+    /**
+     Calculate a hash for a given certificate in DER format
+     
+     - Parameter derData: data of a DER encoded certificate (file)
+     - Returns: the SHA256 hash of the certificates public key, `nil` on error
+     
+     This is useful to get the hash of a certificate before it is deployed.
+     Tip: You can export DER certificates from the certificate details in Firefox
+     
+     */
+    open func hashForDERCertificate(derData: Data) -> String? {
+        
+        if let certificate = SecCertificateCreateWithData(nil, derData as CFData),
+            let key = publicKeyForCertificate(certificate) {
+            return publicKeyRefToHash(key)
+        }
+        return nil
     }
 
     /**
@@ -139,12 +156,15 @@ class CertificatePinner {
                 certificate = SecTrustGetCertificateAtIndex(trust, index),
                 let publicKey = publicKeyForCertificate(certificate)
             {
+                if debugMode {
+                    let summary = SecCertificateCopySubjectSummary(certificate) as? String ?? ""
+                    print("\nCertificate: \(summary)")
+                }
                 let publicKeyHash = publicKeyRefToHash(publicKey)
                 res.append(publicKeyHash)
                 
                 if debugMode {
-                    let summary = SecCertificateCopySubjectSummary(certificate) as? String ?? ""
-                    print("Certificate: \(summary)\nHash: \(publicKeyHash)")
+                    print("Hash SHA256:   \(publicKeyHash)")
                 }
             }
         }
@@ -156,6 +176,7 @@ class CertificatePinner {
     */
     fileprivate func publicKeyForCertificate(_ certificate: SecCertificate) -> SecKey? {
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L289
+        
         var publicKey: SecKey?
 
         let policy = SecPolicyCreateBasicX509()
@@ -177,11 +198,16 @@ class CertificatePinner {
 
         if let keyData = publicKeyRefToData(publicKeyRef) {
 
+            if debugMode {
+                let hex = (keyData as NSData).hexString ?? ""
+                print("Public Key \(keyData.count) bytes:\n\(hex)")
+            }
+            
             var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
             CC_SHA256((keyData as NSData).bytes, CC_LONG(keyData.count), &hash)
             let res = Data(bytes: UnsafePointer<UInt8>(hash), count: Int(CC_SHA256_DIGEST_LENGTH))
-
-            return res.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0))
+            
+            return res.base64EncodedString()
         }
 
         return ""
@@ -200,13 +226,14 @@ class CertificatePinner {
         var delResult : OSStatus = noErr
         
         // on iOS 10+ we can directly get the key data
-        if #available(iOS 10, *) {
+        if #available(iOS 10.0, macOS 10.12, *) {
             var error:Unmanaged<CFError>? = nil
             let keyData = SecKeyCopyExternalRepresentation(publicKeyRef, &error) as? Data
             
             if let error = error?.takeRetainedValue() as? Error {
                 print("publicKeyRefToData > \(error.localizedDescription)")
             }
+
             return keyData
         }
         
@@ -237,4 +264,29 @@ class CertificatePinner {
     }
 
 
+}
+
+
+
+extension NSData {
+    
+    var hexString: String? {
+        let buf = bytes.assumingMemoryBound(to: UInt8.self)
+        let charA = UInt8(UnicodeScalar("a").value)
+        let char0 = UInt8(UnicodeScalar("0").value)
+        
+        func itoh(_ value: UInt8) -> UInt8 {
+            return (value > 9) ? (charA + value - 10) : (char0 + value)
+        }
+        
+        let hexLen = length * 2
+        let ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: hexLen)
+        
+        for i in 0 ..< length {
+            ptr[i*2] = itoh((buf[i] >> 4) & 0xF)
+            ptr[i*2+1] = itoh(buf[i] & 0xF)
+        }
+        
+        return String(bytesNoCopy: ptr, length: hexLen, encoding: .utf8, freeWhenDone: true)?.uppercased()
+    }
 }
