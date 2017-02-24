@@ -35,74 +35,71 @@ To use this, have a look in `CertificatePinningTest/ViewController.swift`. The c
 You need to setup the pinner with one or more hashes, and (if you want to validate it) the source domain name.
 
 ```
-    func setupCertificatePinner() -> CertificatePinner {
-        var pinner = CertificatePinner("www.google.co.nz")
+func setupCertificatePinner() -> CertificatePinner {
+    var pinner = CertificatePinner("www.google.co.nz")
 
-        pinner.debugMode = true
-        pinner.addCertificateHash("+abCS2zjVyISeEE90Fq1eC1ihAtQoh6q3mMUjlLGXfw=")
+    pinner.debugMode = true
+    pinner.addCertificateHash("+abCS2zjVyISeEE90Fq1eC1ihAtQoh6q3mMUjlLGXfw=")
 
-        return pinner
-    }
+    return pinner
+}
 ```
 
-## NSURLSession
+## URLSession
 
-`NSUrlSession` is the new hottness from iOS7 onwards. You should be using it.
+`URLSession` is the new hottness from iOS7 onwards. You should be using it.
 
-```
-	func nsUrlSessionTapped(sender: UIButton) {
-        let url = NSURL(string: "https://www.google.co.nz")
+```swift
+func nsUrlSessionTapped(_ sender: UIButton) {
+    let url = URL(string: "https://www.google.co.nz")
 
-        let session = NSURLSession(
-       	 	configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration(),
+    let session = Foundation.URLSession(
+    configuration: URLSessionConfiguration.ephemeral,
             delegate: self,
             delegateQueue: nil)
 
 
-        let task = session.dataTaskWithURL(url!) {
-            (data, response, error) in
-            if error != nil {
-                print("error....")
-            } else {
-                print("done")
-            }
+    let task = session.dataTask(with: url!, completionHandler: {
+        (data, response, error) in
+        if error != nil {
+            print("error....")
+        } else {
+            print("done")
         }
+    }) 
 
-        task.resume()
+    task.resume()
+}
 
-    }
 ```
 
 Once it's started, you need to implement `NSURLSessionDelegate`, and implement `didReceiveChallenge`
 
-```
-	func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
+```swift
+func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         print("being challanged! for \(challenge.protectionSpace.host)")
 
-        guard let trust = challenge.protectionSpace.serverTrust else {
-            print("invalid trust!")
-            completionHandler(.CancelAuthenticationChallenge, nil)
-            return
-        }
-
-
-        let credential = NSURLCredential(trust: trust)
-
-        let pinner = setupCertificatePinner()
-
-        if (!pinner.validateCertificateTrustChain(trust)) {
-            print("failed: invalid certificate chain!")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
-        }
-
-        if (pinner.validateTrustPublicKeys(trust)) {
-            completionHandler(.UseCredential, credential)
-
-        } else {
-            print("couldn't validate trust for \(challenge.protectionSpace.host)")
-            completionHandler(.CancelAuthenticationChallenge, nil)
-        }
+    guard let trust = challenge.protectionSpace.serverTrust else {
+        print("invalid trust!")
+        completionHandler(.cancelAuthenticationChallenge, nil)
+        return
     }
+
+    let credential = URLCredential(trust: trust)
+    let pinner = setupCertificatePinner()
+
+    if (!pinner.validateCertificateTrustChain(trust)) {
+        print("failed: invalid certificate chain!")
+        challenge.sender?.cancel(challenge)
+    }
+
+    if (pinner.validateTrustPublicKeys(trust)) {
+        completionHandler(.useCredential, credential)
+    } else {
+        print("couldn't validate trust for \(challenge.protectionSpace.host)")
+        completionHandler(.cancelAuthenticationChallenge, nil)
+    }
+}
 ```
 
 ## NSURLConnection
@@ -111,44 +108,41 @@ Once it's started, you need to implement `NSURLSessionDelegate`, and implement `
 
 You need to kick off an `NSURLConnection` in the same manner as you normally would, but provide a delegate:
 
-```
-	func nsUrlConnectionTapped(sender: UIButton) {
-	    let request = NSMutableURLRequest(URL: NSURL(string: "https://www.google.co.nz")!)
-	    let conn = NSURLConnection(request: request, delegate: self, startImmediately: true)
-	}
+```swift
+func nsUrlConnectionTapped(_ sender: UIButton) {
+    let request = URLRequest(url: URL(string: "https://www.google.co.nz")!)
+    _ = NSURLConnection(request: request, delegate: self, startImmediately: true)
+}
 ```
 
 You then implement `NSURLConnectionDelegate`, and override `willSendRequestForAuthenticationChallenge`:
 
-```
-    func connection(connection: NSURLConnection, willSendRequestForAuthenticationChallenge challenge: NSURLAuthenticationChallenge) {
-        print("being challanged! for \(challenge.protectionSpace.host)")
+```swift
+func connection(_ connection: NSURLConnection, willSendRequestFor challenge: URLAuthenticationChallenge) {
+    print("being challanged! for \(challenge.protectionSpace.host)")
 
-        guard let trust = challenge.protectionSpace.serverTrust else {
-            print("invalid trust!")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
-            return
-        }
-
-
-
-        let credential = NSURLCredential(trust: trust)
-
-        let pinner = setupCertificatePinner()
-
-        if (!pinner.validateCertificateTrustChain(trust)) {
-            print("failed: invalid certificate chain!")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
-        }
-
-        if (pinner.validateTrustPublicKeys(trust)) {
-            challenge.sender?.useCredential(credential, forAuthenticationChallenge: challenge)
-        } else {
-            print ("couldn't validate trust for \(challenge.protectionSpace.host)")
-            challenge.sender?.cancelAuthenticationChallenge(challenge)
-        }
-
+    guard let trust = challenge.protectionSpace.serverTrust else {
+        print("invalid trust!")
+        challenge.sender?.cancel(challenge)
+        return
     }
+
+
+    let credential = URLCredential(trust: trust)
+    let pinner = setupCertificatePinner()
+
+    if (!pinner.validateCertificateTrustChain(trust)) {
+        print("failed: invalid certificate chain!")
+        challenge.sender?.cancel(challenge)
+    }
+
+    if (pinner.validateTrustPublicKeys(trust)) {
+        challenge.sender?.use(credential, for: challenge)
+    } else {
+        print ("couldn't validate trust for \(challenge.protectionSpace.host)")
+        challenge.sender?.cancel(challenge)
+    }
+}
 
 ```
 
