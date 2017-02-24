@@ -12,33 +12,27 @@ import Security
 
 /*
 In order to use this, you need to pull this file in, as well as CertificatePinner_swiftBridge.h
-
 If you already have a Swift bridge, you can just include this in it:
 
 #import <CommonCrypto/CommonHMAC.h>
-
+ 
 This pulls in the SHA256 functions.
-
+ 
 Portions of this - usually Objective C versons - taken from AlamoFire and AFNetworking
-
 */
 
 
 class CertificatePinner {
 
     /**
-
         The base URL to check against when validateCertificateTrustChain is called.
-
     */
     open var expectedBaseUrl : String?
 
 
     /**
-
         Debug mode prints out the hashes on validation. Useful for finding out what the server is presenting
         so you have something to pin to
-
     */
     open var debugMode: Bool = false
 
@@ -47,21 +41,17 @@ class CertificatePinner {
 
 
     init() {
-
     }
 
-    init(_ expectedUrl : String)  {
+    init(_ expectedUrl : String) {
         expectedBaseUrl = expectedUrl
     }
 
     /**
-
         Add a hash to validate against.
-
-        - Parameter hash: the hash string (eg "+abCS2zjVyISeEE90Fq1eC1ihAtQoh6q3mMUjlLGXfw=") to match
-
         Use debugMode to find the hashes
 
+        - Parameter hash: the hash string (eg "+abCS2zjVyISeEE90Fq1eC1ihAtQoh6q3mMUjlLGXfw=") to match
     */
     open func addCertificateHash(_ hash : String) {
         localHashList.append(hash)
@@ -69,13 +59,10 @@ class CertificatePinner {
 
 
     /**
-
         Validates the certificate trust chain - we are expecing a certificate from google.com, did we get one?
 
         - Parameter trust: The trust provided by NSUrlSession and NSUrlConnection
-
         - Returns: true if the chain is valid.
-
     */
     open func validateCertificateTrustChain(_ trust: SecTrust) -> Bool {
 
@@ -95,9 +82,7 @@ class CertificatePinner {
         if SecTrustEvaluate(trust, &result) == errSecSuccess {
             return (result == SecTrustResultType.unspecified || result == SecTrustResultType.proceed)
         }
-
         return false
-
     }
 
     /**
@@ -116,9 +101,7 @@ class CertificatePinner {
     */
     open func validateTrustPublicKeys(_ trust: SecTrust) -> Bool {
 
-
         let trustPublicKeys = getPublicKeysFromTrust(trust)
-
 
         //do we have anything to compare to?
         if trustPublicKeys.count == 0 {
@@ -130,13 +113,6 @@ class CertificatePinner {
             return true
         }
 
-        if debugMode {
-            print("hash order is usually most specific to least, so the first one is your domain, the last is the root CA")
-            for trustKey in trustPublicKeys {
-                print("hash: \(trustKey)")
-            }
-        }
-
         for trustKey in trustPublicKeys {
             for localKey in localHashList {
                 if (localKey == trustKey) {
@@ -144,9 +120,7 @@ class CertificatePinner {
                 }
             }
         }
-
         return false
-
     }
 
     /**
@@ -156,7 +130,10 @@ class CertificatePinner {
 
         //https://github.com/Alamofire/Alamofire/blob/master/Source/ServerTrustPolicy.swift#L274
         var res : [String] = []
-
+        if debugMode {
+            print("hash order is usually most specific to least, so the first one is your domain, the last is the root CA")
+        }
+        
         for index in 0..<SecTrustGetCertificateCount(trust) {
             if let
                 certificate = SecTrustGetCertificateAtIndex(trust, index),
@@ -164,9 +141,13 @@ class CertificatePinner {
             {
                 let publicKeyHash = publicKeyRefToHash(publicKey)
                 res.append(publicKeyHash)
+                
+                if debugMode {
+                    let summary = SecCertificateCopySubjectSummary(certificate) as? String ?? ""
+                    print("Certificate: \(summary)\nHash: \(publicKeyHash)")
+                }
             }
         }
-
         return res
     }
 
@@ -217,7 +198,19 @@ class CertificatePinner {
         var publicKeyData : AnyObject?
         var putResult : OSStatus = noErr
         var delResult : OSStatus = noErr
-
+        
+        // on iOS 10+ we can directly get the key data
+        if #available(iOS 10, *) {
+            var error:Unmanaged<CFError>? = nil
+            let keyData = SecKeyCopyExternalRepresentation(publicKeyRef, &error) as? Data
+            
+            if let error = error?.takeRetainedValue() as? Error {
+                print("publicKeyRefToData > \(error.localizedDescription)")
+            }
+            return keyData
+        }
+        
+        // on iOS < 10 we need to go via KeyChain to get the key data
         let putKeyParams : NSMutableDictionary = [
             kSecClass as String : kSecClassKey,
             kSecAttrApplicationTag as String : keychainTag,
@@ -242,7 +235,6 @@ class CertificatePinner {
 
         return publicKeyData as? Data
     }
-
 
 
 }
