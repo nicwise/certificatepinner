@@ -214,7 +214,7 @@ class CertificatePinner {
     */
     fileprivate func publicKeyRefToData(_ publicKeyRef: SecKey) -> Data? {
         
-        if #available(iOS 10, *) {
+        if #available(iOS 10.0, macOS 10.12, *) {
             //So much easier in ios 10+
             var error:Unmanaged<CFError>?
             //Copy the useful part of the key, get the data
