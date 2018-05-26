@@ -5,6 +5,7 @@ A Swift implementation of certificate pinning which works with `NSURLSession` an
 The [full blog post is located here](https://fastchicken.co.nz/2016/03/21/increasing-your-trust-certificate-pinning-on-ios).
 
 > 2017-01-09: Updated for Swift 3.0. If you want [Swift 2.0 its now under a tag.](https://github.com/nicwise/certificatepinner/tree/swift2.0)
+>
 > 2018-07-25: Updated for Swift 4.0. If you want [Swift 3.0 its now under a tag.](https://github.com/nicwise/certificatepinner/tree/swift3.0)
 
 
@@ -32,7 +33,7 @@ We choose to pin to the CA leaf node, after conversations with our penitration t
 
 To use this, have a look in `CertificatePinningTest/ViewController.swift`. The crux of it is:
 
-##Setup
+## Setup
 
 You need to setup the pinner with one or more hashes, and (if you want to validate it) the source domain name.
 
