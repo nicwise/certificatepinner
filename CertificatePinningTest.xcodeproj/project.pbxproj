@@ -100,7 +100,8 @@
 				ORGANIZATIONNAME = None;
 				TargetAttributes = {
 					1AA089C16247BA8A98A80D67 = {
-						LastSwiftMigration = 0820;
+						DevelopmentTeam = B8KSFS2SG8;
+						LastSwiftMigration = 0930;
 					};
 				};
 			};
@@ -171,12 +172,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = B8KSFS2SG8;
 				INFOPLIST_FILE = CertificatePinningTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bigted.CertificatePinningTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nicwise.CertificatePinningTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/CertificatePinningTest/CertificatePinner_swiftBridge.h";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -184,12 +187,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = B8KSFS2SG8;
 				INFOPLIST_FILE = CertificatePinningTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bigted.CertificatePinningTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nicwise.CertificatePinningTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/CertificatePinningTest/CertificatePinner_swiftBridge.h";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

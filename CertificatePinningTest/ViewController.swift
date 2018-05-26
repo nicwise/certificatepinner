@@ -42,7 +42,7 @@ class ViewController: UIViewController {
          */
         
         pinner.debugMode = true
-        pinner.addCertificateHash("Jdw/MAPXx4bGGaRs+XZiR91WQOt39WrAYvJdkI0xVG8=")
+        pinner.addCertificateHash("A+AYYnl/OEI00+dn8ix/BZVjXPYGKovDR0iz3dZmkfw=")
 
         return pinner
     }
@@ -66,7 +66,7 @@ class ViewController: UIViewController {
         let url = URL(string: "https://www.google.co.nz")
 
         let session = Foundation.URLSession(
-        configuration: URLSessionConfiguration.ephemeral,
+                configuration: URLSessionConfiguration.ephemeral,
                 delegate: self,
                 delegateQueue: nil)
 
@@ -126,7 +126,8 @@ extension ViewController : NSURLConnectionDataDelegate {
 }
 
 extension ViewController : URLSessionDelegate {
-    @available(iOS 7.0, *) func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    @available(iOS 7.0, *)
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         print("being challanged! for \(challenge.protectionSpace.host)")
 
         guard let trust = challenge.protectionSpace.serverTrust else {
