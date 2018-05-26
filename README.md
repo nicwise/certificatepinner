@@ -5,6 +5,8 @@ A Swift implementation of certificate pinning which works with `NSURLSession` an
 The [full blog post is located here](https://fastchicken.co.nz/2016/03/21/increasing-your-trust-certificate-pinning-on-ios).
 
 > 2017-01-09: Updated for Swift 3.0. If you want [Swift 2.0 its now under a tag.](https://github.com/nicwise/certificatepinner/tree/swift2.0)
+> 2018-07-25: Updated for Swift 4.0. If you want [Swift 3.0 its now under a tag.](https://github.com/nicwise/certificatepinner/tree/swift3.0)
+
 
 Certificate Pinning can be quite difficult if you are not using [AlamoFire](https://github.com/Alamofire/Alamofire) or [AFNetworking](https://github.com/AFNetworking/AFNetworking), as iOS doesn't expose any API's to get the certificate information out. The normal solution is to pull in bits of openssl, but to be honest, thats overkill.
 
