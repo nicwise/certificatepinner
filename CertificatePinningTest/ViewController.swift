@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+
     }
 
 
@@ -83,8 +84,33 @@ class ViewController: UIViewController {
         task.resume()
 
     }
-
-
+    
+    
+    @IBAction func getHashOfCertificateFile(_ sender: UIButton) {
+        
+        /*
+         CertificatePinner can calculate the hash for DER coded certificate
+         files on your disk / in your project.
+         
+         To do so, read in the DER file as Data and hand it to the 
+         hashForDERCertificate function.
+         
+         This is very handy when you have not deployed your certificate yet.
+         */
+        
+        let pinner = CertificatePinner()
+        
+        //read in sample DER certificate
+        let derURL = Bundle.main.url(forResource: "google_co_nz", withExtension: "der")!
+        let derData = try! Data(contentsOf: derURL)
+        if let hash = pinner.hashForDERCertificate(derData: derData) {
+            print("SHA256 hash for \(derURL):\n\(hash)\n\n")
+        } else {
+            print("Could not calculate hash for \(derURL)\n\n")
+        }
+    }
+    
+    
 
 }
 

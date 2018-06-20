@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E99BB8F1E605D4000D5D9AE /* google_co_nz.der in Resources */ = {isa = PBXBuildFile; fileRef = 0E99BB8E1E605D4000D5D9AE /* google_co_nz.der */; };
 		1AA083F3585BFCD761DB621C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA08F761811FE8A00D7461C /* AppDelegate.swift */; };
 		1AA08439AA67FA53500386CE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AA080394497B76A2CBB10F5 /* LaunchScreen.storyboard */; };
 		1AA0858A0E88237F2D023ED6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AA0829C71FC696C5999FE6B /* Assets.xcassets */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E99BB8E1E605D4000D5D9AE /* google_co_nz.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = google_co_nz.der; sourceTree = "<group>"; };
 		1AA080648CCAF28748471A07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1AA080BBC6E3EC2D53231846 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1AA08283197B9FC4137BEE55 /* CertificatePinningTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CertificatePinningTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,6 +66,7 @@
 				1AA0836BD32E37949482A37B /* Main.storyboard */,
 				1AA086524429E8CCC7BBF2AA /* ViewController.swift */,
 				1AA086FD50B456A773CB0655 /* CertificatePinner.swift */,
+				0E99BB8E1E605D4000D5D9AE /* google_co_nz.der */,
 				1AA08A525F53A849E0444162 /* CertificatePinner_swiftBridge.h */,
 			);
 			path = CertificatePinningTest;
@@ -129,6 +132,7 @@
 			files = (
 				1AA0858A0E88237F2D023ED6 /* Assets.xcassets in Resources */,
 				1AA08439AA67FA53500386CE /* LaunchScreen.storyboard in Resources */,
+				0E99BB8F1E605D4000D5D9AE /* google_co_nz.der in Resources */,
 				1AA0875D3CD7CBDE9237ED76 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

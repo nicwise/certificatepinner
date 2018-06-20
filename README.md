@@ -157,6 +157,26 @@ You then implement `NSURLConnectionDelegate`, and override `willSendRequestForAu
 
 This implementation errs on the side of "reject if anything looks wrong".
 
+
+## Local Certificate File
+It might well be, that you have a certificate file that is not deployed online. You can calculate the public key hash of a certificate file using the `hashForDERCertificate(: Data)` function:
+
+```swift
+let pinner = CertificatePinner()
+    
+//read in sample DER certificate
+let derURL = Bundle.main.url(forResource: "google_co_nz", withExtension: "der")!
+let derData = try! Data(contentsOf: derURL)
+if let hash = pinner.hashForDERCertificate(derData: derData) {
+    print("SHA256 hash for \(derURL):\n\(hash)\n\n")
+} else {
+    print("Could not calculate hash for \(derURL)\n\n")
+}
+```
+
+Tip: You can easily get the DER file of a website's certificate by showing the certificate details in Firefox. There will be a export button to save the certificate in CER or DER format.
+
+
 # Thanks
 
 Big props to the [AlamoFire](https://github.com/Alamofire/Alamofire) and [AFNetworking](https://github.com/AFNetworking/AFNetworking) teams, where the bulk of the code came from - this is mostly an extraction and replementation in Swift of their code, with a bit of opinion added for good measure.
