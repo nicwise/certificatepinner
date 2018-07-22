@@ -210,39 +210,55 @@ class CertificatePinner {
     /**
         Convert a public key ref into an NSData
 
-        Only way to do this is to load the key into the Keychain, then read it back.
+        No need to use the keychain just get the attributes directly from the SecKey
     */
     fileprivate func publicKeyRefToData(_ publicKeyRef: SecKey) -> Data? {
-        let keychainTag = "X509_KEY"
-        var publicKeyData : AnyObject?
-        var putResult : OSStatus = noErr
-        var delResult : OSStatus = noErr
-
-        let putKeyParams : NSMutableDictionary = [
-            kSecClass as String : kSecClassKey,
-            kSecAttrApplicationTag as String : keychainTag,
-            kSecValueRef as String : publicKeyRef,
-            kSecReturnData as String : kCFBooleanTrue
-        ]
-
-        let delKeyParams : NSMutableDictionary = [
-            kSecClass as String : kSecClassKey,
-            kSecAttrApplicationTag as String : keychainTag,
-            kSecReturnData as String : kCFBooleanTrue
-        ]
-
-        //SecItemAdd takes an UnsafeMutablePointer<AnyObject?>, which means "pointer to AnyObject?"
-        // took me bloody ages to work this one out :( but the & maps to UnsafeMutablePointer<T>
-        putResult = SecItemAdd(putKeyParams as CFDictionary, &publicKeyData)
-        delResult = SecItemDelete(delKeyParams as CFDictionary)
-
-        if putResult != errSecSuccess || delResult != errSecSuccess {
+        
+        if #available(iOS 10.0, macOS 10.12, *) {
+            //So much easier in ios 10+
+            var error:Unmanaged<CFError>?
+            //Copy the useful part of the key, get the data
+            if let cfdata = SecKeyCopyExternalRepresentation(publicKeyRef, &error) {
+                //Toll free bridge from CFData to Data
+                let data = cfdata as Data
+                return data
+            } else {
+                return nil
+            }
+        } else {
+            //Copy key attributes from SecKey SecKeyCopyAttributes
+            guard let keyAttributes = SecKeyCopyAttributes(publicKeyRef) as? [CFString: Any?] else { return nil }
+            
+            //Test keyAttributes for key type kSecAttrKeyType
+            //https://opensource.apple.com/source/Security/Security-55471/sec/Security/SecItemConstants.c.auto.html
+            // SEC_CONST_DECL (kSecAttrKeyTypeRSA, "42");
+            // SEC_CONST_DECL (kSecAttrKeyTypeEC, "73");
+            let keyType = keyAttributes[kSecAttrKeyType] as! CFString
+            if keyType != kSecAttrKeyTypeRSA {
+                //Das is unexpeceted type of key!
+                return nil
+            }
+            
+            //Test keyAttributes to ensure this is a public key
+            //kSecAttrKeyClass
+            //https://opensource.apple.com/source/Security/Security-55471/sec/Security/SecItemConstants.c.auto.html
+            // * SEC_CONST_DECL (kSecAttrKeyClassPublic, "0"); *
+            //SEC_CONST_DECL (kSecAttrKeyClassPrivate, "1");
+            //SEC_CONST_DECL (kSecAttrKeyClassSymmetric, "2");
+            let keyClass = keyAttributes[kSecAttrKeyClass] as! CFString
+            if keyClass != kSecAttrKeyClassPublic {
+                //Nope, wrong key type, get outta here
+                return nil
+            }
+            
+            //Get kSecValueData from keyAttributes, returns Data
+            if let data = keyAttributes[kSecValueData] as? Data {
+                //Profit!
+                return data
+            }
+            
+            //You take no candle!
             return nil
         }
-
-        return publicKeyData as? Data
     }
-
-
-
 }
