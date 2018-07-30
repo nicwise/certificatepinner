@@ -52,9 +52,9 @@ class ViewController: UIViewController {
     //------ NSURLConnection variant (deprecated, but used a lot)
     @IBAction func nsUrlConnectionTapped(_ sender: UIButton) {
 
-        let request = NSMutableURLRequest(url: URL(string: "https://www.google.co.nz")!)
+        let request = URLRequest(url: URL(string: "https://www.google.co.nz")!)
 
-        _ = NSURLConnection(request: request as URLRequest, delegate: self, startImmediately: true)
+        _ = NSURLConnection(request: request, delegate: self, startImmediately: true)
 
     }
 
